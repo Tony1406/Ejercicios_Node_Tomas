@@ -23,6 +23,6 @@ const cocheSchema = new mongoose.Schema({
     extras: [String]
 }, { versionKey: false, timestamps: true }) //timestamps crea dos campos: createdAt y updatedAt, versionKey evita que se cree el campo __v
 
-const Coche = mongoose.model("Coche", cocheSchema)
+const CocheModel = mongoose.model("Coche", cocheSchema)
 
-module.exports = Coche
+module.exports = CocheModel //Exporto el modelo
