@@ -1,5 +1,7 @@
 const CocheModel = require("../model/coche.models"); //Importo el modelo
 const coches = require("../bbdd/coche.bbdds"); //Importo los coches
+const mongoose = require("mongoose");
+
 
 const findByMarca = async (req, res) => {
     const result = await CocheModel.find({ marca: req.params.marca }) //Busca todos los coches que tengan la marca que se pasa por parámetro, req.params.marca es el parámetro que se pasa por la URL que se define en mi modelo
@@ -30,10 +32,52 @@ const findById = async (req, res) => {
     }
 }
 
+const insertOne = async (req, res) => {
+    try {
+        const coche = req.body;
+        const cocheNuevo = new CocheModel(coche)
+        const result = await cocheNuevo.save() //await se usa siempre que se use una promesa, 
+        return res.status(200).send(result)
+    } catch (error) {
+        console.error(error)
+        return res.status(500).send("Error al insertar el coche")
+    }
+}
+
+const updatedOne = async (req, res) => {
+    try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(404).send("Id no válido")
+        }
+        const coche = req.body;
+        const cocheActualizado = await CocheModel.findByIdAndUpdate(req.params.id, coche, { new: true, runValidators: true })
+        return res.status(200).send(cocheActualizado)
+    } catch (error) {
+        console.error(error)
+        return res.status(500).send("Error al actualizar el coche")
+    }
+}
+
+const deleteOne = async (req, res) => {
+    try {
+        const coche = req.body;
+        const result = await CocheModel.findByIdAndDelete(req.params.id)
+        if (!result) {
+            return res.status(404).send("Coche no encontrado")
+        }
+        return res.status(200).send("Coche eliminado correctamente")
+    } catch (error) {
+        console.error(error)
+        return res.status(500).send("Error al eliminar el coche")
+    }
+}
+
 module.exports = {
     findById,
     findByMarca,
     cargaInicial,
     findAll,
-    findByPrecioGreaterThan
+    findByPrecioGreaterThan,
+    insertOne,
+    updatedOne
 }
