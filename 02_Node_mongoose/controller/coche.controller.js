@@ -60,12 +60,14 @@ const updatedOne = async (req, res) => {
 
 const deleteOne = async (req, res) => {
     try {
-        const coche = req.body;
-        const result = await CocheModel.findByIdAndDelete(req.params.id)
-        if (!result) {
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(404).send("Id no válido")
+        }
+        const cocheEliminado = await CocheModel.findByIdAndDelete(req.params.id)
+        if (!cocheEliminado) {
             return res.status(404).send("Coche no encontrado")
         }
-        return res.status(200).send("Coche eliminado correctamente")
+        return res.status(200).send({ message: "Coche eliminado correctamente", coche: cocheEliminado })
     } catch (error) {
         console.error(error)
         return res.status(500).send("Error al eliminar el coche")
@@ -79,5 +81,6 @@ module.exports = {
     findAll,
     findByPrecioGreaterThan,
     insertOne,
-    updatedOne
+    updatedOne,
+    deleteOne
 }
